@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: signalrserver-dpl
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: signalrserver
+  template:
+    metadata:
+       labels:
+         app: signalrserver
+    spec:
+      containers:
+      - name: signalrserver
+        image: "ricardosantos9521/teamrics:signalrserver_BUILDNUMBER"
+        ports:
+        - containerPort: 80
+        env:
+        - name: "ASPNETCORE_ENVIRONMENT"
+          value: "Kubernetes"
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "250m"
+      imagePullSecrets:
+      - name: secretteamrics
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: signalrserver-svc
+spec:
+  selector:
+    app: signalrserver
+  ports:
+  - port: 80
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: signalrserver-ing
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ingress.allow-http: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /signalr/server
+        backend:
+          serviceName: signalrserver-svc
+          servicePort: 80

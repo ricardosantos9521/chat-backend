@@ -1,0 +1,45 @@
+pool: HomeServers
+
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    exclude:
+    - README.md
+
+pr: none
+
+resources:
+- repo: self
+
+steps:
+- task: Docker@1
+  displayName: 'Build an image'
+  inputs:
+    containerregistrytype: 'Container Registry'
+    dockerRegistryEndpoint: teamrics
+    arguments: |
+     --build-arg buildnumber=$(Build.BuildNumber)
+    imageName: 'ricardosantos9521/teamrics:signalrserver_$(Build.BuildNumber)'
+
+- task: Docker@1
+  displayName: 'Push an image'
+  inputs:
+    containerregistrytype: 'Container Registry'
+    dockerRegistryEndpoint: teamrics
+    command: 'Push an image'
+    imageName: 'ricardosantos9521/teamrics:signalrserver_$(Build.BuildNumber)'
+
+- task: CopyFiles@1
+  displayName: copy kubernetes yaml
+  inputs: 
+    contents: "deployment.yaml"
+    targetFolder: $(Build.ArtifactStagingDirectory)
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    artifactName: drop
+
+      

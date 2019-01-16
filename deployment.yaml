@@ -71,8 +71,6 @@ spec:
     app: signalrserver
   ports:
   - port: 80
-    nodePort: 30200
-  type: NodePort
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress

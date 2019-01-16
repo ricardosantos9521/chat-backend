@@ -71,6 +71,8 @@ spec:
     app: signalrserver
   ports:
   - port: 80
+    nodePort: 30200
+  type: NodePort
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -80,11 +82,14 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/ingress.allow-http: "true"
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/service-upstream: "true"
 spec:
   rules:
   - http:
       paths:
-      - path: /signalr/server
+      - path: /signalr/server*
         backend:
           serviceName: signalrserver-svc
           servicePort: 80

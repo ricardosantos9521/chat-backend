@@ -22,7 +22,8 @@ namespace SignalRServer.Controllers
                 {"environment", Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") },
                 {"projectname", Assembly.GetEntryAssembly().GetName().Name},
                 {"buildversion", Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion},
-                {"buildate", (new System.IO.FileInfo(Assembly.GetExecutingAssembly().Location)).LastWriteTimeUtc.ToString()}
+                {"buildate", (new System.IO.FileInfo(Assembly.GetExecutingAssembly().Location)).LastWriteTimeUtc.ToString()},
+                {"redis", Environment.GetEnvironmentVariable("REDIS_CONFIG")}
             };
         }
     }

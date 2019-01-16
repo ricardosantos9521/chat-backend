@@ -19,8 +19,9 @@ namespace SignalRServer
         {
             services.AddMvc();
 
-            services.AddSignalR();
-
+            services
+                .AddSignalR()
+                .AddStackExchangeRedis(Environment.GetEnvironmentVariable("REDIS_CONFIG"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

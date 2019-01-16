@@ -20,11 +20,7 @@ namespace SignalRServer
             services.AddMvc();
 
             services
-                .AddSignalR(options=>{
-                    options.EnableDetailedErrors = true;
-                    options.HandshakeTimeout = new TimeSpan(0, 0, 45);
-                    options.KeepAliveInterval = new TimeSpan(0, 0, 45);
-                })
+                .AddSignalR()
                 .AddStackExchangeRedis(Environment.GetEnvironmentVariable("REDIS_CONFIG"));
         }
 

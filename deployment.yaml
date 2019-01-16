@@ -47,20 +47,22 @@ spec:
     spec:
       containers:
       - name: signalrserver
-        image: "ricardosantos9521/teamrics:signalrserver_BUILDNUMBER"
+        # image: "ricardosantos9521/teamrics:signalrserver_BUILDNUMBER"
+        image: "signalrserver"
+        imagePullPolicy: Never
         ports:
         - containerPort: 80
         env:
         - name: "ASPNETCORE_ENVIRONMENT"
           value: "Kubernetes"
         - name: "REDIS_CONFIG"
-          value: "192.168.1.150:30500"
+          value: "192.168.1.64:30500"
         resources:
           limits:
             memory: "128Mi"
             cpu: "250m"
-      imagePullSecrets:
-      - name: secretteamrics
+      # imagePullSecrets:
+      # - name: secretteamrics
 ---
 apiVersion: v1
 kind: Service

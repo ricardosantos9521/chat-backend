@@ -47,20 +47,22 @@ spec:
     spec:
       containers:
       - name: signalrserver
-        image: "ricardosantos9521/teamrics:signalrserver_BUILDNUMBER"
+        # image: "ricardosantos9521/teamrics:signalrserver_BUILDNUMBER"
+        image: "signalrserver"
+        imagePullPolicy: Never
         ports:
         - containerPort: 80
         env:
         - name: "ASPNETCORE_ENVIRONMENT"
           value: "Kubernetes"
         - name: "REDIS_CONFIG"
-          value: "192.168.1.150:30500"
+          value: "192.168.1.64:30500"
         resources:
           limits:
             memory: "128Mi"
             cpu: "250m"
-      imagePullSecrets:
-      - name: secretteamrics
+      # imagePullSecrets:
+      # - name: secretteamrics
 ---
 apiVersion: v1
 kind: Service
@@ -71,6 +73,8 @@ spec:
     app: signalrserver
   ports:
   - port: 80
+    nodePort: 30200
+  type: NodePort
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -80,11 +84,14 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/ingress.allow-http: "true"
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/service-upstream: "true"
 spec:
   rules:
   - http:
       paths:
-      - path: /signalr/server
+      - path: /signalr/server*
         backend:
           serviceName: signalrserver-svc
           servicePort: 80

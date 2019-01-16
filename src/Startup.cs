@@ -21,7 +21,24 @@ namespace SignalRServer
 
             services
                 .AddSignalR()
-                .AddStackExchangeRedis(Environment.GetEnvironmentVariable("REDIS_CONFIG"));
+                .AddStackExchangeRedis(o =>
+                {
+                    o.ConnectionFactory = async writer =>
+                    {
+                        var connection = await ConnectionMultiplexer.ConnectAsync(Environment.GetEnvironmentVariable("REDIS_CONFIG"), writer);
+                        connection.ConnectionFailed += (_, e) =>
+                        {
+                            Console.WriteLine("Connection to Redis failed.");
+                        };
+
+                        if (!connection.IsConnected)
+                        {
+                            Console.WriteLine("Did not connect to Redis.");
+                        }
+
+                        return connection;
+                    };
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

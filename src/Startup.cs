@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using StackExchange.Redis;
 
 namespace SignalRServer
 {
@@ -16,11 +18,6 @@ namespace SignalRServer
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-
-            services.AddCors(options => options.AddPolicy("CorsPolicy", builder =>
-            {
-                builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin().AllowCredentials();
-            }));
 
             services.AddSignalR();
 
@@ -34,7 +31,13 @@ namespace SignalRServer
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseCors("CorsPolicy");
+            app.UseCors(builder =>
+            {
+                builder.AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .SetIsOriginAllowed(isOriginAllowed: _ => true)
+                        .AllowCredentials();
+            });
 
             // Configuro os hubs do SignalR
             app.UseSignalR(routes =>

@@ -7,15 +7,15 @@ WORKDIR /src
 COPY ["src/SignalRServer.csproj", "."]
 RUN dotnet restore "SignalRServer.csproj"
 COPY /src .
-RUN dotnet build "SignalRServer.csproj" -c Debug -o /app
+RUN dotnet build "SignalRServer.csproj" -c Release -o /app
 
 FROM build AS publish
 ARG buildnumber="notset"
-RUN dotnet publish "SignalRServer.csproj" -c Debug --version-suffix $buildnumber -o /app
+RUN dotnet publish "SignalRServer.csproj" -c Release --version-suffix $buildnumber -o /app
 
 FROM base AS final
 WORKDIR /app
-ENV ASPNETCORE_ENVIRONMENT Development
+ENV ASPNETCORE_ENVIRONMENT Production
 ENV ASPNETCORE_URLS "http://+"
 EXPOSE 80
 COPY --from=publish /app .

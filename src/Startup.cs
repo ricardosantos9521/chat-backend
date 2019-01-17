@@ -26,6 +26,9 @@ namespace SignalRServer
                     o.ConnectionFactory = async writer =>
                     {
                         var connection = await ConnectionMultiplexer.ConnectAsync(Environment.GetEnvironmentVariable("REDIS_CONFIG"), writer);
+
+                        Console.WriteLine($"\nREDIS_CONFIG: {Environment.GetEnvironmentVariable("REDIS_CONFIG")}");
+
                         connection.ConnectionFailed += (_, e) =>
                         {
                             Console.WriteLine("Connection to Redis failed.");
@@ -35,6 +38,11 @@ namespace SignalRServer
                         {
                             Console.WriteLine("Did not connect to Redis.");
                         }
+                        else
+                        {
+                            Console.WriteLine("Connected to Redis.");
+                        }
+                        Console.WriteLine();
 
                         return connection;
                     };

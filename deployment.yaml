@@ -16,7 +16,7 @@ spec:
     resources:
       limits:
         cpu: "0.1"
-        memory: "128Mi"
+        memory: "256Mi"
 ---
 apiVersion: v1
 kind: Service
@@ -48,6 +48,7 @@ spec:
       containers:
       - name: signalrserver
         image: "ricardosantos9521/teamrics:signalrserver_BUILDNUMBER"
+        imagePullPolicy: Always
         ports:
         - containerPort: 80
         env:
@@ -89,7 +90,7 @@ spec:
   rules:
   - http:
       paths:
-      - path: /signalrserver
+      - path: /signalr/server
         backend:
           serviceName: signalrserver-svc
           servicePort: 80

@@ -19,7 +19,7 @@ namespace SignalRServer
             contador++;
             Console.WriteLine(string.Format("{0} usuários online.", contador));
             await base.OnConnectedAsync();
-            await Clients.Caller.SendAsync("Receive", "admin", "podName:" + Environment.MachineName);
+            await Clients.Caller.SendAsync("Receive", "admin", "podName: " + Environment.MachineName);
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)

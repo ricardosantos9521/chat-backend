@@ -13,8 +13,6 @@ namespace SignalRServer
 {
     public class Startup
     {
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
@@ -25,13 +23,25 @@ namespace SignalRServer
                 {
                     o.ConnectionFactory = async writer =>
                     {
-                        var connection = await ConnectionMultiplexer.ConnectAsync(Environment.GetEnvironmentVariable("REDIS_CONFIG"), writer);
+                        string redis_config = Environment.GetEnvironmentVariable("REDIS_CONFIG");
+                        if (redis_config==null)
+                        {
+                            Console.WriteLine("Environment Variable 'REDIS_CONFIG' not present.");
+                            return null;
+                        }
 
-                        Console.WriteLine($"\nREDIS_CONFIG: {Environment.GetEnvironmentVariable("REDIS_CONFIG")}");
+                        Console.WriteLine($"\nREDIS_CONFIG: {redis_config}");
+
+                        var connection = await ConnectionMultiplexer.ConnectAsync(redis_config, writer);
+
+                        connection.ErrorMessage += (_, e) =>
+                        {
+                            Console.WriteLine("Error message from Redis: " + e);
+                        };
 
                         connection.ConnectionFailed += (_, e) =>
                         {
-                            Console.WriteLine("Connection to Redis failed.");
+                            Console.WriteLine("Connection to Redis failed: " + e);
                         };
 
                         if (!connection.IsConnected)
@@ -42,14 +52,13 @@ namespace SignalRServer
                         {
                             Console.WriteLine("Connected to Redis.");
                         }
-                        Console.WriteLine();
+                        Console.WriteLine("");
 
                         return connection;
                     };
                 });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())

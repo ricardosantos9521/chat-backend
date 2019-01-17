@@ -71,8 +71,6 @@ spec:
     app: signalrserver
   ports:
   - port: 80
-    nodePort: 30200
-  type: NodePort
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -89,7 +87,7 @@ spec:
   rules:
   - http:
       paths:
-      - path: /signalr/server
+      - path: /signalrserver
         backend:
           serviceName: signalrserver-svc
           servicePort: 80

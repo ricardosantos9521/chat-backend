@@ -6,7 +6,7 @@ namespace SignalRServer
 {
     class ChatHub : Hub
     {
-        private static int contador;
+        private int contador = 0;
 
         public async Task Send(string user, string message)
         {

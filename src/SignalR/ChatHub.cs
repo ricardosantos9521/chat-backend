@@ -1,12 +1,20 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
+using StackExchange.Redis;
 
-namespace SignalRServer
+namespace SignalRServer.SignalR
 {
-    class ChatHub : Hub
+    public class ChatHub : Hub
     {
-        private int contador = 0;
+        public static Int64 contador = 0;
+
+        private ISubscriber _subscriber;
+
+        public ChatHub(ISubscriber subscriber)
+        {
+            _subscriber = subscriber;
+        }
 
         public async Task Send(string user, string message)
         {
@@ -16,19 +24,16 @@ namespace SignalRServer
 
         public override async Task OnConnectedAsync()
         {
-            contador++;
-            Console.WriteLine(string.Format("{0} usuários online.", contador));
+            await _subscriber.PublishAsync("CountUsers", 1);
             await base.OnConnectedAsync();
-            await Clients.Caller.SendAsync("Receive", "admin", "podName: " + Environment.MachineName);
-            await Clients.Caller.SendAsync("Receive", "admin", "1 user enter - Users Online: " + contador);
+            await Clients.Caller.SendAsync("Receive", "admin", "Welcome! podName: " + Environment.MachineName);
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            contador--;
-            Console.WriteLine(string.Format("{0} usuários online.", contador));
+            await _subscriber.PublishAsync("CountUsers", -1);
             await base.OnDisconnectedAsync(exception);
-            await Clients.Caller.SendAsync("Receive", "admin", "1 user left - Users Online: " + contador);
+            await Clients.All.SendAsync("Receive", "admin", "Users: " + contador);
         }
     }
 }

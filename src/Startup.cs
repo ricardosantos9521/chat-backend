@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
+using SignalRServer.Controllers;
+using SignalRServer.SignalR;
 using StackExchange.Redis;
 
 namespace SignalRServer
@@ -15,6 +19,14 @@ namespace SignalRServer
     {
         public void ConfigureServices(IServiceCollection services)
         {
+            string redis_config = Environment.GetEnvironmentVariable("REDIS_CONFIG");
+            if (redis_config == null)
+            {
+                Console.WriteLine("Environment Variable 'REDIS_CONFIG' not present.");
+            }
+
+            Console.WriteLine($"\nREDIS_CONFIG: {redis_config}");
+
             services.AddMvc();
 
             services
@@ -23,15 +35,6 @@ namespace SignalRServer
                 {
                     o.ConnectionFactory = async writer =>
                     {
-                        string redis_config = Environment.GetEnvironmentVariable("REDIS_CONFIG");
-                        if (redis_config==null)
-                        {
-                            Console.WriteLine("Environment Variable 'REDIS_CONFIG' not present.");
-                            return null;
-                        }
-
-                        Console.WriteLine($"\nREDIS_CONFIG: {redis_config}");
-
                         var connection = await ConnectionMultiplexer.ConnectAsync(redis_config, writer);
 
                         connection.ErrorMessage += (_, e) =>
@@ -57,6 +60,12 @@ namespace SignalRServer
                         return connection;
                     };
                 });
+
+            var redis = ConnectionMultiplexer.Connect(redis_config);
+            var subscriber = redis.GetSubscriber();
+
+            services.AddSingleton<ISubscriber>(subscriber);
+            services.AddSingleton<SignalRServerComunication>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -74,7 +83,6 @@ namespace SignalRServer
                         .AllowCredentials();
             });
 
-            // Configuro os hubs do SignalR
             app.UseSignalR(routes =>
             {
                 routes.MapHub<ChatHub>("/chat");
@@ -82,6 +90,14 @@ namespace SignalRServer
 
             app.UseMvc();
 
+            var helper = app.ApplicationServices.GetService<SignalRServerComunication>();
+            var subscriber = app.ApplicationServices.GetService<ISubscriber>();
+            subscriber.Subscribe("CountUsers", async (channel, m) =>
+            {
+                ChatHub.contador += Int64.Parse(m.ToString());
+                Console.WriteLine(string.Format("{0} usuários online.", ChatHub.contador));
+                await helper.Send(ChatHub.contador);
+            });
         }
     }
 }

@@ -24,15 +24,17 @@ namespace SignalRServer.SignalR
 
         public override async Task OnConnectedAsync()
         {
-            await _subscriber.PublishAsync("CountUsers", 1);
             await base.OnConnectedAsync();
             await Clients.Caller.SendAsync("Receive", "admin", "Welcome! podName: " + Environment.MachineName);
+            await Clients.All.SendAsync("Users", contador + 1);
+            await _subscriber.PublishAsync("CountUsers", 1);
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            await _subscriber.PublishAsync("CountUsers", -1);
             await base.OnDisconnectedAsync(exception);
+            await Clients.All.SendAsync("Users", contador - 1);
+            await _subscriber.PublishAsync("CountUsers", -1);
         }
     }
 }

@@ -33,7 +33,6 @@ namespace SignalRServer.SignalR
         {
             await _subscriber.PublishAsync("CountUsers", -1);
             await base.OnDisconnectedAsync(exception);
-            await Clients.All.SendAsync("Receive", "admin", "Users: " + contador);
         }
     }
 }

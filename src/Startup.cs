@@ -82,9 +82,9 @@ namespace SignalRServer
 
             app.UseCors(builder =>
             {
-                builder.AllowAnyHeader()
+                builder.WithOrigins("https://rics.synology.me")
                         .AllowAnyMethod()
-                        .SetIsOriginAllowed(isOriginAllowed: _ => true)
+                        .WithMethods("GET", "POST")
                         .AllowCredentials();
             });
 

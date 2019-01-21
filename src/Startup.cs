@@ -31,6 +31,7 @@ namespace SignalRServer
 
             services
                 .AddSignalR()
+                .AddMessagePackProtocol()
                 .AddStackExchangeRedis(o =>
                 {
                     o.ConnectionFactory = async writer =>

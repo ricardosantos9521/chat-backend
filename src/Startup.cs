@@ -88,6 +88,9 @@ namespace SignalRServer
                 routes.MapHub<ChatHub>("/chat");
             });
 
+            app.UseHsts();
+            app.UseHttpsRedirection();
+
             app.UseMvc();
 
             var helper = app.ApplicationServices.GetService<SignalRServerComunication>();

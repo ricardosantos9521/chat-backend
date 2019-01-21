@@ -30,7 +30,12 @@ namespace SignalRServer
             services.AddMvc();
 
             services
-                .AddSignalR()
+                .AddSignalR(hubOptions =>
+                {
+                    hubOptions.EnableDetailedErrors = true;
+                    hubOptions.KeepAliveInterval = TimeSpan.FromMinutes(1);
+                })
+                .AddMessagePackProtocol()
                 .AddStackExchangeRedis(o =>
                 {
                     o.ConnectionFactory = async writer =>

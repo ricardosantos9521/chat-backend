@@ -34,7 +34,7 @@ namespace SignalRServer
                 {
                     hubOptions.EnableDetailedErrors = true;
                 })
-                .AddMessagePackProtocol()
+                // .AddMessagePackProtocol()
                 .AddStackExchangeRedis(o =>
                 {
                     o.ConnectionFactory = async writer =>

@@ -98,11 +98,11 @@ namespace SignalRServer
             var helper = app.ApplicationServices.GetService<SignalRServerComunication>();
             var subscriber = app.ApplicationServices.GetService<ISubscriber>();
 
-            subscriber.SubscribeAsync("SendCount", async (channel, m) =>
+            subscriber.Subscribe("SendCount", async (channel, m) =>
             {
                 ChatHub.countGlobalUsers = 0;
-                Thread.Sleep(3000);
-                await subscriber.PublishAsync("CountUsers", ChatHub.countGlobalUsers);
+                Thread.Sleep(1000);
+                subscriber.PublishAsync("CountUsers", ChatHub.countGlobalUsers).Wait();
             });
 
             subscriber.Subscribe("CountUsers", (channel, m) =>

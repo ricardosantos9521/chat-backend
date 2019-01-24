@@ -101,8 +101,7 @@ namespace SignalRServer
             subscriber.Subscribe("SendCount", (channel, m) =>
             {
                 ChatHub.countGlobalUsers = 0;
-                Thread.Sleep(1000);
-                subscriber.PublishAsync("CountUsers", ChatHub.countGlobalUsers).Wait();
+                subscriber.PublishAsync("CountUsers", ChatHub.countUsers).Wait();
             });
 
             subscriber.Subscribe("CountUsers", (channel, m) =>
@@ -111,7 +110,7 @@ namespace SignalRServer
                 Console.WriteLine(string.Format("{0} usuários online.", ChatHub.countGlobalUsers));
             });
 
-            subscriber.PublishAsync("SendCount", "");
+            subscriber.PublishAsync("SendCount", "").Wait();
 
         }
     }

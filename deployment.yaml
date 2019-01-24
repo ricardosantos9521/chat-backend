@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: signalrserver-dpl
 spec:
-  replicas: 1
+  replicas: 3
   revisionHistoryLimit: 3
   selector:
     matchLabels:
@@ -15,8 +15,8 @@ spec:
     spec:
       containers:
       - name: signalrserver
-        image: signalrserver:latest
-        imagePullPolicy: Never
+        image: "ricardosantos9521/teamrics:signalrserver_BUILDNUMBER"
+        imagePullPolicy: Always
         ports:
         - containerPort: 80
         env:

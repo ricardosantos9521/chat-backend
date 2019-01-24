@@ -98,17 +98,18 @@ namespace SignalRServer
             //var helper = app.ApplicationServices.GetService<SignalRServerComunication>();
             var subscriber = app.ApplicationServices.GetService<ISubscriber>();
 
-            subscriber.Subscribe("SendCount", (channel, m) =>
+            subscriber.SubscribeAsync("SendCount", async (channel, m) =>
             {
                 Program.countGlobalUsers = 0;
-                Console.WriteLine(string.Format("{0} usuários online local.", ChatHub.countUsers));
-                subscriber.PublishAsync("CountUsers", ChatHub.countUsers).Wait();
+                Console.WriteLine(string.Format("Restart users count - {0} usuários online local - {0} total usuários online.", ChatHub.countUsers, Program.countGlobalUsers));
+                await subscriber.PublishAsync("CountUsers", ChatHub.countUsers);
             });
 
-            subscriber.Subscribe("CountUsers", (channel, m) =>
+            subscriber.SubscribeAsync("CountUsers", (channel, m) =>
             {
-                Program.countGlobalUsers += Int64.Parse(m.ToString());
-                Console.WriteLine(string.Format("{0} usuários online.", Program.countGlobalUsers));
+                Int64 number = Int64.Parse(m.ToString());
+                Program.countGlobalUsers += number;
+                Console.WriteLine(string.Format("Add {0} users - {0} usuários online local - {0} total usuários online.", number, ChatHub.countUsers, Program.countGlobalUsers));
             });
 
             subscriber.PublishAsync("SendCount", "").Wait();

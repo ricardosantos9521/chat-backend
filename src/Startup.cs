@@ -105,7 +105,7 @@ namespace SignalRServer
                 await subscriber.PublishAsync("CountUsers", ChatHub.countUsers);
             });
 
-            subscriber.Subscribe("CountUsers", (channel, m) =>
+            subscriber.SubscribeAsync("CountUsers", (channel, m) =>
             {
                 Int64 number = Int64.Parse(m.ToString());
                 Program.countGlobalUsers += number;

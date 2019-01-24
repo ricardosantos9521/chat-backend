@@ -101,16 +101,15 @@ namespace SignalRServer
             subscriber.Subscribe("SendCount", (channel, m) =>
             {
                 ChatHub.countGlobalUsers = 0;
-                Console.WriteLine(string.Format("Restart users count - {0} usuários online local - {0} total usuários online.", ChatHub.countUsers, ChatHub.countGlobalUsers));
+                Console.WriteLine(string.Format("Restart users count - {0} local online - {0} total online", ChatHub.countUsers, ChatHub.countGlobalUsers));
                 subscriber.Publish("CountUsers", ChatHub.countUsers);
             });
 
             subscriber.Subscribe("CountUsers", (channel, m) =>
             {
                 Int64 number = Int64.Parse(m.ToString());
-                Console.WriteLine(string.Format("Add {0} users - {0} usuários online local - {0} total usuários online.", number, ChatHub.countUsers, ChatHub.countGlobalUsers));
                 ChatHub.countGlobalUsers = ChatHub.countGlobalUsers + number;
-                Console.WriteLine(string.Format("Added {0} users - {0} usuários online local - {0} total usuários online.", number, ChatHub.countUsers, ChatHub.countGlobalUsers));
+                Console.WriteLine(string.Format("Added {0} users - {0} local online - {0} total online", number, ChatHub.countUsers, ChatHub.countGlobalUsers));
             });
 
             subscriber.Publish("SendCount", "");

@@ -8,6 +8,7 @@ namespace SignalRServer.SignalR
     public class ChatHub : Hub
     {
         public static Int64 countUsers = 0;
+        public static Int64 countGlobalUsers = 0;
 
         private ISubscriber _subscriber;
 
@@ -27,7 +28,7 @@ namespace SignalRServer.SignalR
             countUsers++;
             await base.OnConnectedAsync();
             await Clients.Caller.SendAsync("Receive", "admin", "Welcome! podName: " + Environment.MachineName);
-            await Clients.All.SendAsync("Users", Program.countGlobalUsers + 1);
+            await Clients.All.SendAsync("Users", countGlobalUsers + 1);
             await _subscriber.PublishAsync("CountUsers", 1);
         }
 
@@ -35,7 +36,7 @@ namespace SignalRServer.SignalR
         {
             countUsers--;
             await base.OnDisconnectedAsync(exception);
-            await Clients.All.SendAsync("Users", Program.countGlobalUsers - 1);
+            await Clients.All.SendAsync("Users", countGlobalUsers - 1);
             await _subscriber.PublishAsync("CountUsers", -1);
         }
     }

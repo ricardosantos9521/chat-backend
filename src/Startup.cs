@@ -95,7 +95,7 @@ namespace SignalRServer
 
             app.UseMvc();
 
-            //var helper = app.ApplicationServices.GetService<SignalRServerComunication>();
+            var helper = app.ApplicationServices.GetService<SignalRServerComunication>();
             var subscriber = app.ApplicationServices.GetService<ISubscriber>();
 
             subscriber.Subscribe("SendCount", async (channel, m) =>

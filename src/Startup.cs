@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -97,24 +98,21 @@ namespace SignalRServer
             var helper = app.ApplicationServices.GetService<SignalRServerComunication>();
             var subscriber = app.ApplicationServices.GetService<ISubscriber>();
 
-            subscriber.Subscribe("SendCount", (channel, m) =>
+            subscriber.SubscribeAsync("SendCount", async (channel, m) =>
             {
                 ChatHub.countGlobalUsers = 0;
-                subscriber.PublishAsync("StartCount", ChatHub.countUsers);
+                Thread.Sleep(3000);
+                await subscriber.PublishAsync("CountUsers", ChatHub.countGlobalUsers);
             });
-
-            subscriber.Subscribe("StartCount", (channel, m) =>
-            {
-                ChatHub.countGlobalUsers += Int64.Parse(m.ToString());
-            });
-
-            subscriber.PublishAsync("SendCount", "");
 
             subscriber.Subscribe("CountUsers", (channel, m) =>
             {
                 ChatHub.countGlobalUsers += Int64.Parse(m.ToString());
                 Console.WriteLine(string.Format("{0} usuários online.", ChatHub.countGlobalUsers));
             });
+
+            subscriber.PublishAsync("SendCount", "");
+
         }
     }
 }

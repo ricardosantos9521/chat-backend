@@ -12,6 +12,7 @@ namespace SignalRServer
 {
     public class Program
     {
+        public static Int64 countGlobalUsers = 0;
         public static void Main(string[] args)
         {
             CreateWebHostBuilder(args).Build().Run();

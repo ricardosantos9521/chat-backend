@@ -95,19 +95,20 @@ namespace SignalRServer
 
             app.UseMvc();
 
-            var helper = app.ApplicationServices.GetService<SignalRServerComunication>();
+            //var helper = app.ApplicationServices.GetService<SignalRServerComunication>();
             var subscriber = app.ApplicationServices.GetService<ISubscriber>();
 
             subscriber.Subscribe("SendCount", (channel, m) =>
             {
-                ChatHub.countGlobalUsers = 0;
+                Program.countGlobalUsers = 0;
+                Console.WriteLine(string.Format("{0} usuários online local.", ChatHub.countUsers));
                 subscriber.PublishAsync("CountUsers", ChatHub.countUsers).Wait();
             });
 
             subscriber.Subscribe("CountUsers", (channel, m) =>
             {
-                ChatHub.countGlobalUsers += Int64.Parse(m.ToString());
-                Console.WriteLine(string.Format("{0} usuários online.", ChatHub.countGlobalUsers));
+                Program.countGlobalUsers += Int64.Parse(m.ToString());
+                Console.WriteLine(string.Format("{0} usuários online.", Program.countGlobalUsers));
             });
 
             subscriber.PublishAsync("SendCount", "").Wait();

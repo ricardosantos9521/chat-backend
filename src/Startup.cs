@@ -95,24 +95,45 @@ namespace SignalRServer
 
             app.UseMvc();
 
-            var helper = app.ApplicationServices.GetService<SignalRServerComunication>();
-            var subscriber = app.ApplicationServices.GetService<ISubscriber>();
-
-            subscriber.Subscribe("SendCount", (channel, m) =>
+            Task.Factory.StartNew(() =>
             {
-                ChatHub.countGlobalUsers = 0;
-                Console.WriteLine(string.Format("Restart users count - {0} local online - {0} total online", ChatHub.countUsers, ChatHub.countGlobalUsers));
-                subscriber.Publish("CountUsers", ChatHub.countUsers);
+                Thread.Sleep(5000);
+                Console.WriteLine("\n");
+
+                var subscriber = app.ApplicationServices.GetService<ISubscriber>();
+
+                subscriber.Subscribe("SendCount", (channel, m) =>
+                {
+                    ChatHub.countGlobalUsers = 0;
+                    Console.WriteLine("Restart users count - {0} local online - {0} total online", ChatHub.countUsers, ChatHub.countGlobalUsers);
+                    subscriber.Publish("CountUsers", ChatHub.countUsers);
+                });
+
+                subscriber.Subscribe("CountUsers", (channel, m) =>
+                {
+                    Int64 number = Int64.Parse(m.ToString());
+                    ChatHub.countGlobalUsers = ChatHub.countGlobalUsers + number;
+                    Console.WriteLine(string.Format("Added {0} users - {0} local online - {0} total online", number, ChatHub.countUsers, ChatHub.countGlobalUsers));
+                });
+
+                //administrator controlles the SendCount requests
+                var subscrivers = subscriber.Publish("administrator", String.Empty);
+                if (subscrivers == 0)
+                {
+                    Console.WriteLine("I'm an administrator");
+                    var semaphore = new Semaphore(0, 1);
+                    semaphore.Release();
+                    subscriber.Subscribe("administrator", (channel, m) =>
+                    {
+                        semaphore.WaitOne();
+                        subscriber.Publish("SendCount", String.Empty);
+                        Thread.Sleep(5000);
+                        semaphore.Release();
+                    });
+                    subscriber.Publish("administrator", String.Empty);
+                }
             });
 
-            subscriber.Subscribe("CountUsers", (channel, m) =>
-            {
-                Int64 number = Int64.Parse(m.ToString());
-                ChatHub.countGlobalUsers = ChatHub.countGlobalUsers + number;
-                Console.WriteLine(string.Format("Added {0} users - {0} local online - {0} total online", number, ChatHub.countUsers, ChatHub.countGlobalUsers));
-            });
-
-            subscriber.Publish("SendCount", "");
 
         }
     }

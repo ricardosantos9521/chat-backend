@@ -121,14 +121,16 @@ namespace SignalRServer
                 if (subscrivers == 0)
                 {
                     Console.WriteLine("I'm an administrator");
+                    var helper = app.ApplicationServices.GetService<SignalRServerComunication>();
                     var semaphore = new Semaphore(0, 1);
                     semaphore.Release();
-                    subscriber.Subscribe("administrator", (channel, m) =>
+                    subscriber.Subscribe("administrator", async (channel, m) =>
                     {
                         semaphore.WaitOne();
                         subscriber.Publish("SendCount", String.Empty);
                         Thread.Sleep(5000);
                         semaphore.Release();
+                        await helper.Send(ChatHub.countGlobalUsers);
                     });
                     subscriber.Publish("administrator", String.Empty);
                 }

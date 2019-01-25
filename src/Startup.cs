@@ -18,6 +18,7 @@ namespace SignalRServer
 {
     public class Startup
     {
+        public static int Rediness = 0;
         public void ConfigureServices(IServiceCollection services)
         {
             string redis_config = Environment.GetEnvironmentVariable("REDIS_CONFIG");
@@ -58,6 +59,7 @@ namespace SignalRServer
                         }
                         else
                         {
+                            Rediness++;
                             Console.WriteLine("Connected to Redis.");
                         }
                         Console.WriteLine("");
@@ -134,8 +136,8 @@ namespace SignalRServer
                     });
                     subscriber.Publish("administrator", String.Empty);
                 }
+                Rediness++;
             });
-
 
         }
     }

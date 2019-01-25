@@ -5,6 +5,10 @@ metadata:
 spec:
   replicas: 3
   revisionHistoryLimit: 3
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 50%
+      maxSurge: 2
   selector:
     matchLabels:
       app: signalrserver
@@ -28,6 +32,13 @@ spec:
           limits:
             memory: "128Mi"
             cpu: "250m"
+        readinessProbe:
+          httpGet:
+             path: /api/readiness/
+             port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 1
       imagePullSecrets:
       - name: secretteamrics
 ---

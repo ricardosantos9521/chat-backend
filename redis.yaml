@@ -29,10 +29,10 @@ metadata:
 spec:
   selector:
     app: redis-pod
-  type: NodePort
+  clusterIP: 10.100.100.100
   ports:
   - port: 6379
-    nodePort: 31500
+    targetPort: 6379
   externalIPs:
-  - 192.168.1.150
+    - 192.168.1.150
 ---

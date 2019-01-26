@@ -10,9 +10,6 @@ trigger:
 
 pr: none
 
-resources:
-- repo: self
-
 steps:
 - task: Docker@1
   displayName: 'Build an image'
@@ -35,6 +32,12 @@ steps:
   displayName: copy kubernetes yaml
   inputs: 
     contents: "deployment.yaml"
+    targetFolder: $(Build.ArtifactStagingDirectory)
+
+- task: CopyFiles@1
+  displayName: copy redis yaml
+  inputs: 
+    contents: "redis.yaml"
     targetFolder: $(Build.ArtifactStagingDirectory)
 
 - task: PublishBuildArtifacts@1

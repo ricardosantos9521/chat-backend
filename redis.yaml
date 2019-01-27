@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: redis-pod
+  name: redis-signalrserver-dpl
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: redis-pod
+      app: redis-signalrserver
   template:
     metadata:
       labels:
-        app: redis-pod
+        app: redis-signalrserver
     spec:
       containers:
       - name: redis
@@ -25,10 +25,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: redis
+  name: redis-signalrserver-svc
 spec:
   selector:
-    app: redis-pod
+    app: redis-signalrserver
   ports:
   - port: 6379
     targetPort: 6379

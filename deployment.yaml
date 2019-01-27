@@ -27,7 +27,7 @@ spec:
         - name: "ASPNETCORE_ENVIRONMENT"
           value: "Kubernetes"
         - name: "REDIS_CONFIG"
-          value: redis.default.svc.cluster.local
+          value: redis-signalrserver-svc.default.svc.cluster.local
         resources:
           limits:
             memory: "128Mi"

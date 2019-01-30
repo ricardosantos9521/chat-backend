@@ -35,6 +35,8 @@ namespace SignalRServer
                 .AddSignalR(hubOptions =>
                 {
                     hubOptions.EnableDetailedErrors = true;
+                    hubOptions.ClientTimeoutInterval = TimeSpan.FromSeconds(60);
+                    hubOptions.KeepAliveInterval = TimeSpan.FromSeconds(30);
                 })
                 // .AddMessagePackProtocol()
                 .AddStackExchangeRedis(o =>

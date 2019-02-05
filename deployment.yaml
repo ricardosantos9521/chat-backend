@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: signalrserver
-        image: "ricardosantos9521/teamrics:signalrserver_BUILDNUMBER"
+        image: "registry.gitlab.com/ricardosantos9521/github/signalrserver:BUILDNUMBER"
         imagePullPolicy: Always
         ports:
         - containerPort: 80

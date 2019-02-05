@@ -18,7 +18,7 @@ steps:
     dockerRegistryEndpoint: teamrics
     arguments: |
      --build-arg buildnumber=$(Build.BuildNumber)
-    imageName: 'ricardosantos9521/teamrics:signalrserver_$(Build.BuildNumber)'
+    imageName: 'registry.gitlab.com/ricardosantos9521/github/signalrserver:$(Build.BuildNumber)'
 
 - task: Docker@1
   displayName: 'Push an image'
@@ -26,7 +26,7 @@ steps:
     containerregistrytype: 'Container Registry'
     dockerRegistryEndpoint: teamrics
     command: 'Push an image'
-    imageName: 'ricardosantos9521/teamrics:signalrserver_$(Build.BuildNumber)'
+    imageName: 'registry.gitlab.com/ricardosantos9521/github/signalrserver:$(Build.BuildNumber)'
 
 - task: CopyFiles@1
   displayName: copy kubernetes yaml

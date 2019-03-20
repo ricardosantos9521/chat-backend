@@ -24,7 +24,7 @@ steps:
   displayName: 'Push an image'
   inputs:
     containerregistrytype: 'Container Registry'
-    dockerRegistryEndpoint: teamrics
+    dockerRegistryEndpoint: 'gitlab registry'
     command: 'Push an image'
     imageName: 'registry.gitlab.com/ricardosantos9521/github/signalrserver:$(Build.BuildNumber)'
 

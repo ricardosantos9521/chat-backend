@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: redis-signalrserver-dpl
+  name: redis-chattestserver-dpl
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: redis-signalrserver
+      app: redis-chattestserver
   template:
     metadata:
       labels:
-        app: redis-signalrserver
+        app: redis-chattestserver
     spec:
       containers:
       - name: redis
@@ -25,10 +25,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: redis-signalrserver-svc
+  name: redis-chattestserver-svc
 spec:
   selector:
-    app: redis-signalrserver
+    app: redis-chattestserver
   ports:
   - port: 6379
     targetPort: 6379

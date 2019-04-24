@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: signalrserver-dpl
+  name: chattestserver-dpl
 spec:
   replicas: 2
   revisionHistoryLimit: 3
@@ -11,15 +11,15 @@ spec:
       maxSurge: 2
   selector:
     matchLabels:
-      app: signalrserver
+      app: chattestserver
   template:
     metadata:
        labels:
-         app: signalrserver
+         app: chattestserver
     spec:
       containers:
-      - name: signalrserver
-        image: "registry.gitlab.com/ricardosantos9521/github/signalrserver:BUILDNUMBER"
+      - name: chattestserver
+        image: "registry.gitlab.com/ricardosantos9521/github/chattest.server:BUILDNUMBER"
         imagePullPolicy: Always
         ports:
         - containerPort: 80
@@ -27,7 +27,7 @@ spec:
         - name: "ASPNETCORE_ENVIRONMENT"
           value: "Kubernetes"
         - name: "REDIS_CONFIG"
-          value: redis-signalrserver-svc.default.svc.cluster.local
+          value: redis-chattestserver-svc.default.svc.cluster.local
         resources:
           limits:
             memory: "128Mi"
@@ -45,10 +45,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: signalrserver-svc
+  name: chattestserver-svc
 spec:
   selector:
-    app: signalrserver
+    app: chattestserver
   ports:
   - port: 80
     nodePort: 30200
@@ -57,7 +57,7 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: signalrserver-ing
+  name: chattestserver-ing
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /$1
     nginx.ingress.kubernetes.io/ingress.allow-http: "true"
@@ -69,7 +69,7 @@ spec:
   rules:
   - http:
       paths:
-      - path: /signalr/server/(.*)
+      - path: /chat/server/(.*)
         backend:
-          serviceName: signalrserver-svc
+          serviceName: chattestserver-svc
           servicePort: 80

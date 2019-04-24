@@ -18,7 +18,7 @@ steps:
     dockerRegistryEndpoint: 'gitlab registry'
     arguments: |
      --build-arg buildnumber=$(Build.BuildNumber)
-    imageName: 'registry.gitlab.com/ricardosantos9521/github/signalrserver:$(Build.BuildNumber)'
+    imageName: 'registry.gitlab.com/ricardosantos9521/github/chattest.server:$(Build.BuildNumber)'
 
 - task: Docker@1
   displayName: 'Push an image'
@@ -26,7 +26,7 @@ steps:
     containerregistrytype: 'Container Registry'
     dockerRegistryEndpoint: 'gitlab registry'
     command: 'Push an image'
-    imageName: 'registry.gitlab.com/ricardosantos9521/github/signalrserver:$(Build.BuildNumber)'
+    imageName: 'registry.gitlab.com/ricardosantos9521/github/chattest.server:$(Build.BuildNumber)'
 
 - task: CopyFiles@1
   displayName: copy kubernetes yaml

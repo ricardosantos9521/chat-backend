@@ -1,4 +1,4 @@
-pool: HomeServers
+pool: "Hosted Ubuntu 1604"
 
 trigger:
   branches:

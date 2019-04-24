@@ -31,7 +31,7 @@ spec:
         resources:
           limits:
             memory: "128Mi"
-            cpu: "200m"
+            cpu: "150m"
         readinessProbe:
           httpGet:
              path: /api/readiness/

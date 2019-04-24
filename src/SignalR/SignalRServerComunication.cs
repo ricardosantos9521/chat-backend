@@ -3,13 +3,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 
-namespace SignalRServer.SignalR
+namespace ChatTest.Server.SignalR
 {
-    public class SignalRServerComunication
+    public class SignalRComunication
     {
         private readonly IHubContext<ChatHub> _hubContext;
 
-        public SignalRServerComunication(IHubContext<ChatHub> hubContext)
+        public SignalRComunication(IHubContext<ChatHub> hubContext)
         {
             _hubContext = hubContext;
         }

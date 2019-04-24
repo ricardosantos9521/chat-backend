@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace SignalRServer.Controllers
+namespace ChatTest.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

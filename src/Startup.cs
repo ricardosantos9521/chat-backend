@@ -10,11 +10,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
-using SignalRServer.Controllers;
-using SignalRServer.SignalR;
+using ChatTest.Server.Controllers;
+using ChatTest.Server.SignalR;
 using StackExchange.Redis;
 
-namespace SignalRServer
+namespace ChatTest.Server
 {
     public class Startup
     {
@@ -74,7 +74,7 @@ namespace SignalRServer
             var subscriber = redis.GetSubscriber();
 
             services.AddSingleton<ISubscriber>(subscriber);
-            services.AddSingleton<SignalRServerComunication>();
+            services.AddSingleton<SignalRComunication>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -125,7 +125,7 @@ namespace SignalRServer
                 if (subscrivers == 0)
                 {
                     Console.WriteLine("I'm an administrator");
-                    var helper = app.ApplicationServices.GetService<SignalRServerComunication>();
+                    var helper = app.ApplicationServices.GetService<SignalRComunication>();
                     var semaphore = new Semaphore(0, 1);
                     semaphore.Release();
                     subscriber.Subscribe("administrator", async (channel, m) =>

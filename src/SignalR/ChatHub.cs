@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using StackExchange.Redis;
 
-namespace SignalRServer.SignalR
+namespace ChatTest.Server.SignalR
 {
     public class ChatHub : Hub
     {

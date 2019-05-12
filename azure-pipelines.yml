@@ -1,43 +1,41 @@
 trigger:
 - master
 
-stages:
+variables:
+  poolName: HomeServers
+  imageName: 'registry.gitlab.com/ricardosantos9521/github/chattest.server:$(Build.BuildNumber)'
+  dockerRegistryEndpoint: 'gitlab registry'
 
+stages:
 #build stage
 - stage: Build
   jobs:
   - job: BuildJob
-    pool: "Hosted Ubuntu 1604"
+    pool: $(poolName)
     steps:
     - task: Docker@1
       displayName: 'Build an image'
       inputs:
-        containerregistrytype: 'Container Registry'
-        dockerRegistryEndpoint: 'gitlab registry'
         arguments: |
           --build-arg buildnumber=$(Build.BuildNumber)
-        imageName: 'registry.gitlab.com/ricardosantos9521/github/chattest.server:$(Build.BuildNumber)'
-
+        imageName: $(imageName)
     - task: Docker@1
       displayName: 'Push an image'
       inputs:
         containerregistrytype: 'Container Registry'
-        dockerRegistryEndpoint: 'gitlab registry'
+        dockerRegistryEndpoint: $(dockerRegistryEndpoint)
         command: 'Push an image'
-        imageName: 'registry.gitlab.com/ricardosantos9521/github/chattest.server:$(Build.BuildNumber)'
-
+        imageName: $(imageName)
     - task: CopyFiles@1
       displayName: copy kubernetes yaml
       inputs: 
         contents: "deployment.yaml"
         targetFolder: $(Build.ArtifactStagingDirectory)
-
     - task: CopyFiles@1
       displayName: copy redis yaml
       inputs: 
         contents: "redis.yaml"
         targetFolder: $(Build.ArtifactStagingDirectory)
-
     - task: PublishBuildArtifacts@1
       inputs:
         pathtoPublish: '$(Build.ArtifactStagingDirectory)'
@@ -48,7 +46,7 @@ stages:
   dependsOn: Build
   jobs:
   - job: DeployJob
-    pool: "HomeServers"
+    pool: $(poolName)
     steps:
     - task: DownloadBuildArtifacts@0
       inputs:
@@ -69,7 +67,7 @@ stages:
         useConfigurationFile: true
         configuration: '$(System.DefaultWorkingDirectory)/drop/redis.yaml'
         containerRegistryType: 'Container Registry'
-        dockerRegistryEndpoint: 'gitlab registry'
+        dockerRegistryEndpoint: $(dockerRegistryEndpoint)
         secretName: secretteamrics
         versionSpec: 1.7.0
     - task: Kubernetes@1

@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: chattestserver-dpl
 spec:
-  replicas: 2
+  replicas: 1
   revisionHistoryLimit: 3
   strategy:
     rollingUpdate:
@@ -30,8 +30,8 @@ spec:
           value: redis-chattestserver-svc.default.svc.cluster.local
         resources:
           limits:
-            memory: "128Mi"
-            cpu: "80m"
+            memory: "256Mi"
+            cpu: "200m"
         readinessProbe:
           httpGet:
              path: /api/readiness/

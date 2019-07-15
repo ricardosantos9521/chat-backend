@@ -66,10 +66,10 @@ stages:
         command: apply
         useConfigurationFile: true
         configuration: '$(System.DefaultWorkingDirectory)/drop/redis.yaml'
+        secretType: 'dockerRegistry'
         containerRegistryType: 'Container Registry'
         dockerRegistryEndpoint: $(dockerRegistryEndpoint)
         secretName: secretteamrics
-        versionSpec: 1.7.0
     - task: Kubernetes@1
       displayName: 'kubectl apply'
       inputs:
@@ -77,7 +77,7 @@ stages:
         command: apply
         useConfigurationFile: true
         configuration: '$(System.DefaultWorkingDirectory)/drop/deployment.yaml'
+        secretType: 'dockerRegistry'
         containerRegistryType: 'Container Registry'
-        dockerRegistryEndpoint: 'gitlab registry'
+        dockerRegistryEndpoint: $(dockerRegistryEndpoint)
         secretName: secretteamrics
-        versionSpec: 1.7.0

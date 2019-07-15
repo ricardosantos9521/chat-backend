@@ -31,5 +31,3 @@ spec:
     app: redis-chattestserver
   ports:
   - port: 6379
-    nodePort: 6379
-  type: NodePort

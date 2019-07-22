@@ -30,8 +30,11 @@ spec:
           value: redis-chattestserver-svc.default.svc.cluster.local
         resources:
           limits:
-            memory: "256Mi"
-            cpu: "200m"
+            cpu: 500m
+            memory: 250Mi
+          requests:
+            cpu: 250m
+            memory: 200Mi
         readinessProbe:
           httpGet:
              path: /api/readiness/

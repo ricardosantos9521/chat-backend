@@ -29,12 +29,7 @@ stages:
     - task: CopyFiles@1
       displayName: copy kubernetes yaml
       inputs: 
-        contents: "deployment.yaml"
-        targetFolder: $(Build.ArtifactStagingDirectory)
-    - task: CopyFiles@1
-      displayName: copy redis yaml
-      inputs: 
-        contents: "redis.yaml"
+        contents: "*.yaml"
         targetFolder: $(Build.ArtifactStagingDirectory)
     - task: PublishBuildArtifacts@1
       inputs:
@@ -63,8 +58,9 @@ stages:
       displayName: 'Create namespace'
       inputs:
         connectionType: 'None'
-        command: 'create'
-        arguments: 'namespace chat'
+        command: 'apply'
+        useConfigurationFile: true
+        configuration: '$(System.DefaultWorkingDirectory)/drop/namespace.yaml'
     - task: Kubernetes@1
       displayName: 'kubectl apply redis'
       inputs:

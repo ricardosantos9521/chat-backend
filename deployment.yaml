@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: chattestserver-dpl
 spec:
-  replicas: 1
+  replicas: 2
   revisionHistoryLimit: 3
   strategy:
     rollingUpdate:
@@ -69,8 +69,13 @@ metadata:
     nginx.ingress.kubernetes.io/session-cookie-name: "route_socket"
     nginx.ingress.kubernetes.io/session-cookie-hash: "sha1"
 spec:
+  tls:
+  - hosts:
+    - rics.synology.me
+    secretName: tlscert
   rules:
-  - http:
+  - host: rics.synology.me
+    http:
       paths:
       - path: /chat/server/(.*)
         backend:

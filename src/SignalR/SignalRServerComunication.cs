@@ -14,9 +14,9 @@ namespace ChatTest.Server.SignalR
             _hubContext = hubContext;
         }
 
-        public async Task Send(Int64 contador)
+        public async Task Send(Int64 counter)
         {
-            await _hubContext.Clients.All.SendAsync("Users", contador);
+            await _hubContext.Clients.All.SendAsync("Users", counter);
         }
     }
 }

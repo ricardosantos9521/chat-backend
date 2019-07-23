@@ -18,7 +18,7 @@ namespace ChatTest.Server
 {
     public class Startup
     {
-        public static int Rediness = 0;
+        public static int Readiness = 0;
         public void ConfigureServices(IServiceCollection services)
         {
             string redis_config = Environment.GetEnvironmentVariable("REDIS_CONFIG");
@@ -35,10 +35,7 @@ namespace ChatTest.Server
                 .AddSignalR(hubOptions =>
                 {
                     hubOptions.EnableDetailedErrors = true;
-                    hubOptions.ClientTimeoutInterval = TimeSpan.FromSeconds(60);
-                    hubOptions.KeepAliveInterval = TimeSpan.FromSeconds(30);
                 })
-                // .AddMessagePackProtocol()
                 .AddStackExchangeRedis(o =>
                 {
                     o.ConnectionFactory = async writer =>
@@ -61,7 +58,7 @@ namespace ChatTest.Server
                         }
                         else
                         {
-                            Rediness++;
+                            Readiness++;
                             Console.WriteLine("Connected to Redis.");
                         }
                         Console.WriteLine("");
@@ -121,8 +118,8 @@ namespace ChatTest.Server
                 });
 
                 //administrator controlles the SendCount requests
-                var subscrivers = subscriber.Publish("administrator", String.Empty);
-                if (subscrivers == 0)
+                var subscribers = subscriber.Publish("administrator", String.Empty);
+                if (subscribers == 0)
                 {
                     Console.WriteLine("I'm an administrator");
                     var helper = app.ApplicationServices.GetService<SignalRComunication>();
@@ -138,7 +135,7 @@ namespace ChatTest.Server
                     });
                     subscriber.Publish("administrator", String.Empty);
                 }
-                Rediness++;
+                Readiness++;
             });
 
         }

@@ -17,11 +17,11 @@ namespace ChatTest.Server.Controllers
         [HttpGet()]
         public ActionResult<Dictionary<string, string>> GetVersion()
         {
-            if (Startup.Rediness >= 2)
+            if (Startup.Readiness >= 2)
             {
-                return Ok(Startup.Rediness);
+                return Ok(Startup.Readiness);
             }
-            return BadRequest(Startup.Rediness);
+            return BadRequest(Startup.Readiness);
         }
     }
 }

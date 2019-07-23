@@ -1,7 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: chattestserver-dpl
+  name: chatserver-dpl
+  namespace: chat
 spec:
   replicas: 2
   revisionHistoryLimit: 3
@@ -11,23 +12,22 @@ spec:
       maxSurge: 2
   selector:
     matchLabels:
-      app: chattestserver
+      app: chatserver-app
   template:
     metadata:
        labels:
-         app: chattestserver
+         app: chatserver-app
     spec:
       containers:
-      - name: chattestserver
-        image: "registry.gitlab.com/ricardosantos9521/github/chattest.server:BUILDNUMBER"
-        imagePullPolicy: Always
+      - name: chatserver-container
+        image: "registry.gitlab.com/ricardosantos9521/github/chatserver:BUILDNUMBER"
         ports:
         - containerPort: 80
         env:
         - name: "ASPNETCORE_ENVIRONMENT"
           value: "Kubernetes"
         - name: "REDIS_CONFIG"
-          value: redis-chattestserver-svc.default.svc.cluster.local
+          value: redis-chatserver-svc.chat.svc.cluster.local
         resources:
           limits:
             cpu: 500m
@@ -43,15 +43,16 @@ spec:
           periodSeconds: 10
           successThreshold: 1
       imagePullSecrets:
-      - name: secretteamrics
+      - name: gitlabdockersecret
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: chattestserver-svc
+  name: chatserver-svc
+  namespace: chat
 spec:
   selector:
-    app: chattestserver
+    app: chatserver-app
   ports:
   - port: 80
     nodePort: 30200
@@ -60,7 +61,8 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: chattestserver-ing
+  name: chatserver-ing
+  namespace: chat
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /$1
     nginx.ingress.kubernetes.io/ingress.allow-http: "true"
@@ -79,5 +81,5 @@ spec:
       paths:
       - path: /chat/server/(.*)
         backend:
-          serviceName: chattestserver-svc
+          serviceName: chatserver-svc
           servicePort: 80

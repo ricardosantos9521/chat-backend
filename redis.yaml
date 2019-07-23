@@ -1,16 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: redis-chattestserver-dpl
+  name: redis-chatserver-dpl
+  namespace: chat
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: redis-chattestserver
+      app: redis-chatserver-app
   template:
     metadata:
       labels:
-        app: redis-chattestserver
+        app: redis-chatserver-app
     spec:
       containers:
       - name: redis
@@ -25,9 +26,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: redis-chattestserver-svc
+  name: redis-chatserver-svc
+  namespace: chat
 spec:
   selector:
-    app: redis-chattestserver
+    app: redis-chatserver-app
   ports:
   - port: 6379

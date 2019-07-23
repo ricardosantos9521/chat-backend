@@ -3,7 +3,7 @@ trigger:
 
 variables:
   poolName: HomeServers
-  imageName: 'registry.gitlab.com/ricardosantos9521/github/chattest.server:$(Build.BuildNumber)'
+  imageName: 'registry.gitlab.com/ricardosantos9521/github/chatserver:$(Build.BuildNumber)'
   dockerRegistryEndpoint: 'gitlab registry'
 
 stages:
@@ -60,6 +60,12 @@ stages:
         RegEx: BUILDNUMBER
         ValueToReplace: '$(Build.BuildNumber)'
     - task: Kubernetes@1
+      displayName: 'Create namespace'
+      inputs:
+        connectionType: 'None'
+        command: 'create'
+        arguments: 'namespace chat'
+    - task: Kubernetes@1
       displayName: 'kubectl apply redis'
       inputs:
         connectionType: None
@@ -80,4 +86,5 @@ stages:
         secretType: 'dockerRegistry'
         containerRegistryType: 'Container Registry'
         dockerRegistryEndpoint: $(dockerRegistryEndpoint)
-        secretName: secretteamrics
+        secretName: 'gitlabdockersecret'
+        namespace: chat

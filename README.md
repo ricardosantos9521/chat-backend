@@ -1,5 +1,5 @@
-# payLaterApi
-[![Build Status](https://dev.azure.com/ricardosantos9521/ricardosantos9521/_apis/build/status/payLaterApi?branchName=master)](https://dev.azure.com/ricardosantos9521/ricardosantos9521/_build/latest?definitionId=3?branchName=master)
+# SignalR Chat Server
+[![Build Status](https://dev.azure.com/ricardosantos9521/GitHub%20Projects/_apis/build/status/ChatTest.Server?branchName=master)](https://dev.azure.com/ricardosantos9521/GitHub%20Projects/_build/latest?definitionId=8&branchName=master)
 
 Please go to https://github.com/ricardosantos9521/ChatTest.Client for more info about this project
 

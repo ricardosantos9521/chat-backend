@@ -1,23 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
-using ChatTest.Server.Controllers;
 using ChatTest.Server.SignalR;
 using StackExchange.Redis;
+using Microsoft.Extensions.Configuration;
 
 namespace ChatTest.Server
 {
     public class Startup
     {
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
+        public IConfiguration Configuration { get; }
+
         public static int Readiness = 0;
         public void ConfigureServices(IServiceCollection services)
         {
@@ -29,7 +30,7 @@ namespace ChatTest.Server
 
             Console.WriteLine($"\nREDIS_CONFIG: {redis_config}");
 
-            services.AddMvc();
+            services.AddCors();
 
             services
                 .AddSignalR(hubOptions =>
@@ -37,35 +38,35 @@ namespace ChatTest.Server
                     hubOptions.EnableDetailedErrors = true;
                 })
                 .AddStackExchangeRedis(o =>
-                {
-                    o.ConnectionFactory = async writer =>
                     {
-                        var connection = await ConnectionMultiplexer.ConnectAsync(redis_config, writer);
-
-                        connection.ErrorMessage += (_, e) =>
+                        o.ConnectionFactory = async writer =>
                         {
-                            Console.WriteLine("Error message from Redis: " + e);
+                            var connection = await ConnectionMultiplexer.ConnectAsync(redis_config, writer);
+
+                            connection.ErrorMessage += (_, e) =>
+                            {
+                                Console.WriteLine("Error message from Redis: " + e);
+                            };
+
+                            connection.ConnectionFailed += (_, e) =>
+                            {
+                                Console.WriteLine("Connection to Redis failed: " + e);
+                            };
+
+                            if (!connection.IsConnected)
+                            {
+                                Console.WriteLine("Did not connect to Redis.");
+                            }
+                            else
+                            {
+                                Readiness++;
+                                Console.WriteLine("Connected to Redis.");
+                            }
+                            Console.WriteLine("");
+
+                            return connection;
                         };
-
-                        connection.ConnectionFailed += (_, e) =>
-                        {
-                            Console.WriteLine("Connection to Redis failed: " + e);
-                        };
-
-                        if (!connection.IsConnected)
-                        {
-                            Console.WriteLine("Did not connect to Redis.");
-                        }
-                        else
-                        {
-                            Readiness++;
-                            Console.WriteLine("Connected to Redis.");
-                        }
-                        Console.WriteLine("");
-
-                        return connection;
-                    };
-                });
+                    });
 
             var redis = ConnectionMultiplexer.Connect(redis_config);
             var subscriber = redis.GetSubscriber();
@@ -74,9 +75,9 @@ namespace ChatTest.Server
             services.AddSingleton<SignalRComunication>();
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
+            if (env.EnvironmentName.Equals("Development"))
             {
                 app.UseDeveloperExceptionPage();
             }
@@ -89,12 +90,12 @@ namespace ChatTest.Server
                         .AllowCredentials();
             });
 
-            app.UseSignalR(routes =>
-            {
-                routes.MapHub<ChatHub>("/chat");
-            });
+            app.UseRouting();
 
-            app.UseMvc();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapHub<ChatHub>("/chat");
+            });
 
             Task.Factory.StartNew(() =>
             {
@@ -137,7 +138,6 @@ namespace ChatTest.Server
                 }
                 Readiness++;
             });
-
         }
     }
 }

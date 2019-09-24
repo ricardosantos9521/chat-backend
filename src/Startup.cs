@@ -32,6 +32,8 @@ namespace ChatTest.Server
 
             services.AddCors();
 
+            services.AddControllers();
+
             services
                 .AddSignalR(hubOptions =>
                 {
@@ -95,6 +97,7 @@ namespace ChatTest.Server
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHub<ChatHub>("/chat");
+                endpoints.MapControllers();
             });
 
             Task.Factory.StartNew(() =>

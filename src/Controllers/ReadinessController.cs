@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,10 +6,8 @@ namespace ChatTest.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
-    public class ReadinessController : ControllerBase
+    public class ReadinessController : Controller
     {
-        [AllowAnonymous]
         [HttpGet()]
         public ActionResult<Dictionary<string, string>> GetVersion()
         {

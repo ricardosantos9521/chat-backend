@@ -8,16 +8,17 @@ trigger:
     - README.md
 
 variables:
-  poolName: HomeServers
-  imageName: 'registry.gitlab.com/ricardosantos9521/github/chatserver:$(Build.BuildNumber)'
-  dockerRegistryEndpoint: 'gitlab registry'
+  poolDeployName: HomeServers
+  imageName: 'registry.gitlab.com/ricardosantos9521/chat/backend:$(Build.BuildNumber)'
+  dockerRegistryEndpoint: 'GitLab Registry'
 
 stages:
 #build stage
 - stage: Build
   jobs:
   - job: BuildJob
-    pool: $(poolName)
+    pool:
+      vmImage: 'ubuntu-latest'
     steps:
     - task: Docker@1
       displayName: 'Build an image'
@@ -52,7 +53,7 @@ stages:
     )
   jobs:
   - job: DeployJob
-    pool: $(poolName)
+    pool: $(poolDeployName)
     steps:
     - task: DownloadBuildArtifacts@0
       inputs:

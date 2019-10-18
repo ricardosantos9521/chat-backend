@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 
-namespace ChatTest.Server.SignalR
+namespace Chat.Backend.SignalR
 {
     public class SignalRComunication
     {

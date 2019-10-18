@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: chatserver-dpl
+  name: chat-backend-dpl
   namespace: chat
 spec:
   replicas: 2
@@ -12,54 +12,54 @@ spec:
       maxSurge: 2
   selector:
     matchLabels:
-      app: chatserver-app
+      app: chat-backend-app
   template:
     metadata:
-       labels:
-         app: chatserver-app
+      labels:
+        app: chat-backend-app
     spec:
       containers:
-      - name: chatserver-container
-        image: "registry.gitlab.com/ricardosantos9521/github/chatserver:BUILDNUMBER"
-        ports:
-        - containerPort: 80
-        env:
-        - name: "ASPNETCORE_ENVIRONMENT"
-          value: "Kubernetes"
-        - name: "REDIS_CONFIG"
-          value: redis-chatserver-svc.chat.svc.cluster.local
-        resources:
-          limits:
-            cpu: 300m
-            memory: 200Mi
-          requests:
-            cpu: 200m
-            memory: 100Mi
-        readinessProbe:
-          httpGet:
-             path: /api/readiness/
-             port: 80
-          initialDelaySeconds: 10
-          periodSeconds: 10
-          successThreshold: 1
+        - name: chat-backend-container
+          image: "registry.gitlab.com/ricardosantos9521/chat/backend:BUILDNUMBER"
+          ports:
+            - containerPort: 80
+          env:
+            - name: "ASPNETCORE_ENVIRONMENT"
+              value: "Kubernetes"
+            - name: "REDIS_CONFIG"
+              value: redis-chat-backend-svc.chat.svc.cluster.local
+          resources:
+            limits:
+              cpu: 300m
+              memory: 200Mi
+            requests:
+              cpu: 200m
+              memory: 100Mi
+          readinessProbe:
+            httpGet:
+              path: /api/readiness/
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
       imagePullSecrets:
-      - name: gitlabdockersecret
+        - name: gitlabdockersecret
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: chatserver-svc
+  name: chat-backend-svc
   namespace: chat
 spec:
   selector:
-    app: chatserver-app
+    app: chat-backend-app
   ports:
-  - port: 80
+    - port: 80
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: chatserver-ing
+  name: chat-backend-ing
   namespace: chat
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /$1
@@ -70,14 +70,14 @@ metadata:
     nginx.ingress.kubernetes.io/session-cookie-hash: "sha1"
 spec:
   tls:
-  - hosts:
-    - ricspt.ddns.net
-    secretName: tlscert
+    - hosts:
+        - ricspt.ddns.net
+      secretName: tlscert
   rules:
-  - host: ricspt.ddns.net
-    http:
-      paths:
-      - path: /chat/server/(.*)
-        backend:
-          serviceName: chatserver-svc
-          servicePort: 80
+    - host: ricspt.ddns.net
+      http:
+        paths:
+          - path: /chat/backend/(.*)
+            backend:
+              serviceName: chat-backend-svc
+              servicePort: 80

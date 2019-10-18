@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using ChatTest.Server.SignalR;
+using Chat.Backend.SignalR;
 using StackExchange.Redis;
 using Microsoft.Extensions.Configuration;
 
-namespace ChatTest.Server
+namespace Chat.Backend
 {
     public class Startup
     {

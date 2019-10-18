@@ -4,7 +4,7 @@ using System.Reflection;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ChatTest.Server.Controllers
+namespace Chat.Backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

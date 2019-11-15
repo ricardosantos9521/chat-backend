@@ -13,84 +13,81 @@ variables:
   dockerRegistryEndpoint: "GitLab Registry"
 
 stages:
-  #build stage
-  - stage: Build
-    jobs:
-      - job: BuildJob
-        pool:
-          vmImage: "ubuntu-latest"
-        steps:
-          - task: Docker@1
-            displayName: "Build an image"
-            inputs:
-              arguments: |
-                --build-arg buildnumber=$(Build.BuildNumber)
-              imageName: $(imageName)
-          - task: Docker@1
-            displayName: "Push an image"
-            inputs:
-              containerregistrytype: "Container Registry"
-              dockerRegistryEndpoint: $(dockerRegistryEndpoint)
-              command: "Push an image"
-              imageName: $(imageName)
-          - task: kasunkodagoda.regex-match-replace.regex-match-replace.RegExMatchReplace@2
-            displayName: "RegEx Match & Replace"
-            inputs:
-              PathToFile: "deployment.yaml"
-              RegEx: BUILDNUMBER
-              ValueToReplace: "$(Build.BuildNumber)"
-          - task: CopyFiles@1
-            displayName: copy kubernetes yaml
-            inputs:
-              contents: "*.yaml"
-              targetFolder: $(Build.ArtifactStagingDirectory)
-          - task: PublishBuildArtifacts@1
-            inputs:
-              pathtoPublish: "$(Build.ArtifactStagingDirectory)"
-              artifactName: drop
+- stage: Build
+  jobs:
+  - job: BuildJob
+    pool:
+      vmImage: "ubuntu-latest"
+    steps:
+      - task: Docker@1
+        displayName: "Build an image"
+        inputs:
+          arguments: |
+            --build-arg buildnumber=$(Build.BuildNumber)
+          imageName: $(imageName)
+      - task: Docker@1
+        displayName: "Push an image"
+        inputs:
+          containerregistrytype: "Container Registry"
+          dockerRegistryEndpoint: $(dockerRegistryEndpoint)
+          command: "Push an image"
+          imageName: $(imageName)
+      - task: kasunkodagoda.regex-match-replace.regex-match-replace.RegExMatchReplace@2
+        displayName: "RegEx Match & Replace"
+        inputs:
+          PathToFile: "deployment.yaml"
+          RegEx: BUILDNUMBER
+          ValueToReplace: "$(Build.BuildNumber)"
+      - task: CopyFiles@1
+        displayName: copy kubernetes yaml
+        inputs:
+          contents: "*.yaml"
+          targetFolder: $(Pipeline.Workspace)
+      - task: PublishPipelineArtifact@1
+        inputs:
+          targetPath: '$(Pipeline.Workspace)'
+          artifact: pipeline
 
-  #deploy stage
-  - stage: Deploy
-    dependsOn: Build
-    condition: |
-      and(
-        eq(variables['Build.SourceBranch'], 'refs/heads/master'),
-        ne(variables['Build.Reason'], 'PullRequest')
-      )
-    jobs:
-      - job: DeployJob
-        pool: $(poolDeployName)
-        steps:
-          - task: DownloadBuildArtifacts@0
-            inputs:
-              buildType: "current"
-              artifactName: "drop"
-              downloadPath: "$(System.DefaultWorkingDirectory)"
+- stage: Deploy
+  dependsOn: Build
+  condition: |
+    and(
+      eq(variables['Build.SourceBranch'], 'refs/heads/master'),
+      ne(variables['Build.Reason'], 'PullRequest')
+    )
+  jobs:
+  - deployment: DeployJob
+    environment: "chat-backend deploy"
+    pool: $(poolDeployName)
+    strategy:
+      runOnce:
+        deploy:
+          steps:
           - task: Kubernetes@1
-            displayName: "Create namespace"
+            displayName: "Create namespace if don't exist"
             inputs:
               connectionType: "None"
               command: "apply"
               useConfigurationFile: true
-              configuration: "$(System.DefaultWorkingDirectory)/drop/namespace.yaml"
+              configuration: "$(Pipeline.Workspace)/pipeline/namespace.yaml"
           - task: Kubernetes@1
-            displayName: "kubectl apply redis"
+            displayName: "Apply Redis"
             inputs:
               connectionType: None
               command: apply
               useConfigurationFile: true
-              configuration: "$(System.DefaultWorkingDirectory)/drop/redis.yaml"
+              configuration: "$(Pipeline.Workspace)/pipeline/redis.yaml"
               secretType: "dockerRegistry"
               containerRegistryType: "Container Registry"
               dockerRegistryEndpoint: $(dockerRegistryEndpoint)
               secretName: secretteamrics
           - task: Kubernetes@1
-            displayName: "kubectl apply"
+            displayName: "Apply changes"
             inputs:
               connectionType: None
               command: apply
               useConfigurationFile: true
-              configuration: "$(System.DefaultWorkingDirectory)/drop/deployment.yaml"
+              configuration: "$(Pipeline.Workspace)/pipeline/deployment.yaml"
               secretType: "dockerRegistry"
               containerRegistryType: "Container Registry"
               dockerRegistryEndpoint: $(dockerRegistryEndpoint)

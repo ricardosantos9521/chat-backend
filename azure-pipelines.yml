@@ -9,7 +9,8 @@ trigger:
 
 variables:
   poolDeployName: HomeServers
-  imageName: "registry.gitlab.com/ricardosantos9521/chat/backend:$(Build.BuildNumber)"
+  imageName: registry.gitlab.com/ricardosantos9521/chat/backend
+  buildId:  $(Build.BuildNumber)
   dockerRegistryEndpoint: "GitLab Registry"
 
 stages:

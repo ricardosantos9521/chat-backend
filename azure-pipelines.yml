@@ -20,16 +20,6 @@ stages:
     pool:
       vmImage: "ubuntu-latest"
     steps:
-    - task: Docker@2
-      inputs:
-        containerRegistry: $(dockerRegistryEndpoint)
-        command: 'login'
-    - script: docker pull $(imageName):latest
-      continueOnError: true
-    - task: Docker@2
-      inputs:
-        containerRegistry: $(dockerRegistryEndpoint)
-        command: 'logout'  
     - task: Docker@1
       inputs:
         command: "Build an image"
@@ -37,7 +27,6 @@ stages:
         dockerFile: Dockerfile
         arguments: |
           --build-arg buildnumber=$(Build.BuildNumber)
-          --cache-from $(imageName):latest
         includeLatestTag: true
     - task: Docker@1
       inputs:

@@ -19,34 +19,34 @@ stages:
     pool:
       vmImage: "ubuntu-latest"
     steps:
-      - task: Docker@1
-        displayName: "Build an image"
-        inputs:
-          arguments: |
-            --build-arg buildnumber=$(Build.BuildNumber)
-          imageName: $(imageName)
-      - task: Docker@1
-        displayName: "Push an image"
-        inputs:
-          containerregistrytype: "Container Registry"
-          dockerRegistryEndpoint: $(dockerRegistryEndpoint)
-          command: "Push an image"
-          imageName: $(imageName)
-      - task: kasunkodagoda.regex-match-replace.regex-match-replace.RegExMatchReplace@2
-        displayName: "RegEx Match & Replace"
-        inputs:
-          PathToFile: "deployment.yaml"
-          RegEx: BUILDNUMBER
-          ValueToReplace: "$(Build.BuildNumber)"
-      - task: CopyFiles@1
-        displayName: copy kubernetes yaml
-        inputs:
-          contents: "*.yaml"
-          targetFolder: $(Pipeline.Workspace)
-      - task: PublishPipelineArtifact@1
-        inputs:
-          targetPath: '$(Pipeline.Workspace)'
-          artifact: pipeline
+    - task: Docker@1
+      displayName: "Build an image"
+      inputs:
+        arguments: |
+          --build-arg buildnumber=$(Build.BuildNumber)
+        imageName: $(imageName)
+    - task: Docker@1
+      displayName: "Push an image"
+      inputs:
+        containerregistrytype: "Container Registry"
+        dockerRegistryEndpoint: $(dockerRegistryEndpoint)
+        command: "Push an image"
+        imageName: $(imageName)
+    - task: kasunkodagoda.regex-match-replace.regex-match-replace.RegExMatchReplace@2
+      displayName: "RegEx Match & Replace"
+      inputs:
+        PathToFile: "deployment.yaml"
+        RegEx: BUILDNUMBER
+        ValueToReplace: "$(Build.BuildNumber)"
+    - task: CopyFiles@1
+      displayName: copy kubernetes yaml
+      inputs:
+        contents: "*.yaml"
+        targetFolder: $(Pipeline.Workspace)
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: '$(Pipeline.Workspace)'
+        artifact: pipeline
 
 - stage: Deploy
   dependsOn: Build

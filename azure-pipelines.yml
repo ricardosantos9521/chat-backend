@@ -20,19 +20,37 @@ stages:
     pool:
       vmImage: "ubuntu-latest"
     steps:
-    - task: Docker@1
-      displayName: "Build an image"
+    - task: Docker@2
       inputs:
+        containerRegistry: $(dockerRegistryEndpoint)
+        command: 'login'
+    - script: docker pull $(imageName):latest
+      continueOnError: true
+    - task: Docker@2
+      inputs:
+        containerRegistry: $(dockerRegistryEndpoint)
+        command: 'logout'  
+    - task: Docker@1
+      inputs:
+        command: "Build an image"
+        imageName: $(imageName):$(buildId)
+        dockerFile: Dockerfile
         arguments: |
           --build-arg buildnumber=$(Build.BuildNumber)
-        imageName: $(imageName)
+          --cache-from $(imageName):latest
+        includeLatestTag: true
     - task: Docker@1
-      displayName: "Push an image"
       inputs:
+        command: "Push an image"
+        imageName: $(imageName):$(buildId)
         containerregistrytype: "Container Registry"
         dockerRegistryEndpoint: $(dockerRegistryEndpoint)
+    - task: Docker@1
+      inputs:
         command: "Push an image"
-        imageName: $(imageName)
+        imageName: $(imageName):latest
+        containerregistrytype: "Container Registry"
+        dockerRegistryEndpoint: $(dockerRegistryEndpoint)
     - task: kasunkodagoda.regex-match-replace.regex-match-replace.RegExMatchReplace@2
       displayName: "RegEx Match & Replace"
       inputs:

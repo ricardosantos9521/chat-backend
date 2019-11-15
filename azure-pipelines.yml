@@ -42,10 +42,10 @@ stages:
       displayName: copy kubernetes yaml
       inputs:
         contents: "*.yaml"
-        targetFolder: $(Pipeline.Workspace)
+        targetFolder: $(Pipeline.Workspace)/artifacts
     - task: PublishPipelineArtifact@1
       inputs:
-        targetPath: '$(Pipeline.Workspace)'
+        targetPath: '$(Pipeline.Workspace)/artifacts'
         artifact: pipeline
 
 - stage: Deploy

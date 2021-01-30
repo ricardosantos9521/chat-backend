@@ -56,28 +56,27 @@ spec:
   ports:
     - port: 80
 ---
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: chat-backend-ing
   namespace: chat
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
     nginx.ingress.kubernetes.io/ingress.allow-http: "true"
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/affinity: "cookie"
     nginx.ingress.kubernetes.io/session-cookie-name: "route_socket"
     nginx.ingress.kubernetes.io/session-cookie-hash: "sha1"
 spec:
-  tls:
-    - hosts:
-        - ricspt.ddns.net
-      secretName: tlscert
   rules:
     - host: ricspt.ddns.net
       http:
         paths:
           - path: /chat/backend/(.*)
+            pathType: Prefix
             backend:
-              serviceName: chat-backend-svc
-              servicePort: 80
+              service:
+                name: chat-backend-svc
+                port:
+                  number: 80

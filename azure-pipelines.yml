@@ -17,8 +17,7 @@ stages:
 - stage: Build
   jobs:
   - job: BuildJob
-    pool:
-      vmImage: "ubuntu-latest"
+    pool: $(poolDeployName)
     steps:
     - task: Docker@1
       inputs:
@@ -46,10 +45,11 @@ stages:
         PathToFile: "deployment.yaml"
         RegEx: BUILDNUMBER
         ValueToReplace: "$(Build.BuildNumber)"
-    - task: CopyFiles@1
-      displayName: copy kubernetes yaml
+    - task: CopyFiles@2
+      displayName: "Copy Kubernetes (yaml) to artifacts"
       inputs:
         contents: "*.yaml"
+        overWrite: true
         targetFolder: $(Pipeline.Workspace)/artifacts
     - task: PublishPipelineArtifact@1
       inputs:
